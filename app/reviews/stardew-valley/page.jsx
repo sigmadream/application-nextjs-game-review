@@ -1,10 +1,12 @@
+import { readFile } from "node:fs/promises";
 import Heading from "@/components/Heading";
 
-export default function StardewValleyPage() {
+export default async function StardewValleyPage() {
+  const text = await readFile("./content/reviews/stardew-valley.md", "utf8");
   return (
     <>
       <Heading>Stardew Valley</Heading>
-      <p>This will be the review for Stardew Valley.</p>
+      <p> {text}</p>
     </>
   );
 }
