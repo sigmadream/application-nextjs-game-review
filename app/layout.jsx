@@ -1,6 +1,13 @@
-import NavBar from "@/components/NavBar";
+import NavBar from "../components/NavBar";
+import { exo2, orbitron } from "./fonts";
 import "./globals.css";
-import { orbitron, exo2 } from "./fonts";
+
+export const metadata = {
+  title: {
+    default: "Indie Gamer",
+    template: "%s | Indie Gamer",
+  },
+};
 
 export default function RootLayout({ children }) {
   return (
