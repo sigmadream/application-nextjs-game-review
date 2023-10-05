@@ -9,7 +9,7 @@ export default function NavBar() {
             href="/"
             className="font-bold font-orbitron text-orange-800 hover:underline"
           >
-            Home
+            Indie Gamer
           </Link>
         </li>
         <li className="ml-auto">
