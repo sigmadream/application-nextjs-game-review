@@ -1,53 +1,40 @@
-import { readdir, readFile } from "node:fs/promises";
-import matter from "gray-matter";
-import { marked } from "marked";
-import qs from "qs";
+import Heading from "@/components/Heading";
+import ShareLinkButton from "@/components/ShareLinkButton";
+import { getReview, getSlugs } from "@/lib/reviews";
 
-export async function getFeaturedReview() {
-  const reviews = await getReviews();
-  return reviews[0];
+// export async function generateStaticParams() {
+//   const slugs = await getSlugs();
+//   return slugs.map((slug) => ({ slug }));
+// }
+
+export async function generateMetadata({ params: { slug } }) {
+  const review = await getReview(slug);
+  return {
+    title: review.title,
+  };
 }
 
-export async function getReview(slug) {
-  const text = await readFile(`./content/reviews/${slug}.md`, "utf8");
-  const {
-    content,
-    data: { title, date, image },
-  } = matter(text);
-  const body = marked(content, { headerIds: false, mangle: false });
-  return { slug, title, date, image, body };
-}
-
-/*
-    slug: 'hellblade',
-    title: 'Hellblade',
-    date: '2023-05-06',
-    image: '/images/hellblade.jpg',
-*/
-export async function getReviews() {
-  const url =
-    "http://127.0.0.1:1337/api/reviews?" +
-    qs.stringify(
-      {
-        fields: ["slug", "title", "subtitle", "publishedAt"],
-        populate: { image: { fields: ["url"] } },
-        sort: ["publishedAt:desc"],
-        pagination: { pageSize: 6 },
-      },
-      { encodeValuesOnly: true }
-    );
-  console.log("getReviews:", url);
-  const response = await fetch(url);
-  const { data } = await response.json();
-  return data.map(({ attributes }) => ({
-    slug: attributes.slug,
-    title: attributes.title,
-  }));
-}
-
-export async function getSlugs() {
-  const files = await readdir("./content/reviews");
-  return files
-    .filter((file) => file.endsWith(".md"))
-    .map((file) => file.slice(0, -".md".length));
+export default async function ReviewPage({ params: { slug } }) {
+  const review = await getReview(slug);
+  console.log("[ReviewPage] review", review);
+  return (
+    <>
+      <Heading>{review.title}</Heading>
+      <div className="flex gap-3 items-baseline">
+        <p className="italic pb-2">{review.date}</p>
+        <ShareLinkButton />
+      </div>
+      <img
+        src={review.image}
+        alt=""
+        width="640"
+        height="360"
+        className="mb-2 rounded"
+      />
+      <article
+        dangerouslySetInnerHTML={{ __html: review.body }}
+        className="max-w-screen-sm prose prose-slate"
+      />
+    </>
+  );
 }
