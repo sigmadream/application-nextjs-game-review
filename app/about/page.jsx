@@ -8,7 +8,7 @@ export default function AboutPage() {
   return (
     <>
       <Heading>About</Heading>
-      <p>Here we'll list all the about.</p>
+      <p>A website created to learn Next.js</p>
     </>
   );
 }
